@@ -50,17 +50,22 @@ self.addEventListener( 'activate', e => {
 } );
 
 self.addEventListener( 'fetch', e => {
+	let res;
 
-	const res = caches.match( e.request ).then( res => {
-		if ( res ) {
-			updateStaticCache( STATIC_CACHE, e.request, APP_SHELL_INMUTABLE );
-			return res;
-		}
+	if (e.request.url.includes('/api')) {
+		res = apiMsgsManager(DYNAMIC_CACHE, e.request);
+	} else {
+		res = caches.match( e.request ).then( res => {
+			if ( res ) {
+				updateStaticCache( STATIC_CACHE, e.request, APP_SHELL_INMUTABLE );
+				return res;
+			}
 
-		return fetch( e.request ).then( newRes => {
-			return updateDynamicCache( DYNAMIC_CACHE, e.request, newRes );
+			return fetch( e.request ).then( newRes => {
+				return updateDynamicCache( DYNAMIC_CACHE, e.request, newRes );
+			} );
 		} );
-	} );
+	}
 
 	e.respondWith( res );
 } );

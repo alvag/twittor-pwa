@@ -1,42 +1,40 @@
-if (navigator.serviceWorker) {
-    navigator.serviceWorker.register('/sw.js');
+if ( navigator.serviceWorker ) {
+	navigator.serviceWorker.register( '/sw.js' );
 }
 
 // Referencias de jQuery
 
-var titulo      = $('#titulo');
-var nuevoBtn    = $('#nuevo-btn');
-var salirBtn    = $('#salir-btn');
-var cancelarBtn = $('#cancel-btn');
-var postBtn     = $('#post-btn');
-var avatarSel   = $('#seleccion');
-var timeline    = $('#timeline');
+var titulo = $( '#titulo' );
+var nuevoBtn = $( '#nuevo-btn' );
+var salirBtn = $( '#salir-btn' );
+var cancelarBtn = $( '#cancel-btn' );
+var postBtn = $( '#post-btn' );
+var avatarSel = $( '#seleccion' );
+var timeline = $( '#timeline' );
 
-var modal       = $('#modal');
-var modalAvatar = $('#modal-avatar');
-var avatarBtns  = $('.seleccion-avatar');
-var txtMensaje  = $('#txtMensaje');
+var modal = $( '#modal' );
+var modalAvatar = $( '#modal-avatar' );
+var avatarBtns = $( '.seleccion-avatar' );
+var txtMensaje = $( '#txtMensaje' );
 
 // El usuario, contiene el ID del héroe seleccionado
 var usuario;
 
 
-
-
 // ===== Codigo de la aplicación
 
-function crearMensajeHTML(mensaje, personaje) {
+function crearMensajeHTML( mensaje, personaje ) {
 
-    var content =`
+	var content = `
     <li class="animated fadeIn fast">
         <div class="avatar">
-            <img src="img/avatars/${ personaje }.jpg">
+            <img src="img/avatars/${personaje}.jpg">
         </div>
         <div class="bubble-container">
             <div class="bubble">
-                <h3>@${ personaje }</h3>
+                <h3>@${personaje}</h3>
                 <br/>
-                ${ mensaje }
+                ${mensaje}
             </div>
             
             <div class="arrow"></div>
@@ -44,86 +42,99 @@ function crearMensajeHTML(mensaje, personaje) {
     </li>
     `;
 
-    timeline.prepend(content);
-    cancelarBtn.click();
+	timeline.prepend( content );
+	cancelarBtn.click();
 
 }
-
 
 
 // Globals
 function logIn( ingreso ) {
 
-    if ( ingreso ) {
-        nuevoBtn.removeClass('oculto');
-        salirBtn.removeClass('oculto');
-        timeline.removeClass('oculto');
-        avatarSel.addClass('oculto');
-        modalAvatar.attr('src', 'img/avatars/' + usuario + '.jpg');
-    } else {
-        nuevoBtn.addClass('oculto');
-        salirBtn.addClass('oculto');
-        timeline.addClass('oculto');
-        avatarSel.removeClass('oculto');
+	if ( ingreso ) {
+		nuevoBtn.removeClass( 'oculto' );
+		salirBtn.removeClass( 'oculto' );
+		timeline.removeClass( 'oculto' );
+		avatarSel.addClass( 'oculto' );
+		modalAvatar.attr( 'src', 'img/avatars/' + usuario + '.jpg' );
+	} else {
+		nuevoBtn.addClass( 'oculto' );
+		salirBtn.addClass( 'oculto' );
+		timeline.addClass( 'oculto' );
+		avatarSel.removeClass( 'oculto' );
 
-        titulo.text('Seleccione Personaje');
-    
-    }
+		titulo.text( 'Seleccione Personaje' );
+
+	}
 
 }
 
 
 // Seleccion de personaje
-avatarBtns.on('click', function() {
+avatarBtns.on( 'click', function() {
 
-    usuario = $(this).data('user');
+	usuario = $( this ).data( 'user' );
 
-    titulo.text('@' + usuario);
+	titulo.text( '@' + usuario );
 
-    logIn(true);
+	logIn( true );
 
-});
+} );
 
 // Boton de salir
-salirBtn.on('click', function() {
+salirBtn.on( 'click', function() {
 
-    logIn(false);
+	logIn( false );
 
-});
+} );
 
 // Boton de nuevo mensaje
-nuevoBtn.on('click', function() {
+nuevoBtn.on( 'click', function() {
 
-    modal.removeClass('oculto');
-    modal.animate({ 
-        marginTop: '-=1000px',
-        opacity: 1
-    }, 200 );
+	modal.removeClass( 'oculto' );
+	modal.animate( {
+		marginTop: '-=1000px',
+		opacity: 1
+	}, 200 );
 
-});
+} );
 
 // Boton de cancelar mensaje
-cancelarBtn.on('click', function() {
-    if ( !modal.hasClass('oculto') ) {
-        modal.animate({
-            marginTop: '+=1000px',
-            opacity: 0
-        }, 200, function() {
-            modal.addClass('oculto');
-            txtMensaje.val('');
-        });
-    }
-});
+cancelarBtn.on( 'click', function() {
+	if ( !modal.hasClass( 'oculto' ) ) {
+		modal.animate( {
+			marginTop: '+=1000px',
+			opacity: 0
+		}, 200, function() {
+			modal.addClass( 'oculto' );
+			txtMensaje.val( '' );
+		} );
+	}
+} );
 
 // Boton de enviar mensaje
-postBtn.on('click', function() {
+postBtn.on( 'click', function() {
 
-    var mensaje = txtMensaje.val();
-    if ( mensaje.length === 0 ) {
-        cancelarBtn.click();
-        return;
-    }
+	var mensaje = txtMensaje.val();
+	if ( mensaje.length === 0 ) {
+		cancelarBtn.click();
+		return;
+	}
 
-    crearMensajeHTML( mensaje, usuario );
+	crearMensajeHTML( mensaje, usuario );
 
-});
+} );
+
+// Obtener mensajes del servidor
+
+function getMessages() {
+	fetch( 'http://localhost:3000/api/' )
+	.then( res => res.json() )
+	.then( msgs => {
+		console.log( msgs );
+
+		msgs.forEach(msg => crearMensajeHTML(msg. message, msg.user));
+	} );
+}
+
+getMessages();
