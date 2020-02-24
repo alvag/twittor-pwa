@@ -14,15 +14,16 @@ const APP_SHEL = [
 	'img/avatars/spiderman.jpg',
 	'img/avatars/thor.jpg',
 	'img/avatars/wolverine.jpg',
-	'js/app.js'
+	'js/app.js',
+	'js/sw-utils.js'
 ];
 
 const APP_SHELL_INMUTABLE = [
 	'https://fonts.googleapis.com/css?family=Quicksand:300,400',
 	'https://fonts.googleapis.com/css?family=Lato:400,300',
 	'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
-	'css/animate.css',
-	'js/libs/jquery.js'
+	'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css',
+	'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'
 ];
 
 self.addEventListener( 'install', e => {
@@ -52,6 +53,7 @@ self.addEventListener( 'fetch', e => {
 
 	const res = caches.match( e.request ).then( res => {
 		if ( res ) {
+			updateStaticCache( STATIC_CACHE, e.request, APP_SHELL_INMUTABLE );
 			return res;
 		}
 

@@ -72,6 +72,10 @@
         "$"     : true,
         "self"  : true,
         "caches": true,
-        "importScripts": true
+        "importScripts": true,
+        "__dirname": true,
+        "require"  : true,
+        "module"   : true,
+        "process"  : true
     }
 }
