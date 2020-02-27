@@ -12,8 +12,7 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 // Directorio Público
-// app.use(express.static(publicPath), {redirect: false});
-app.use( '/', express.static( publicPath ) );
+app.use(express.static(publicPath));
 
 // Rutas 
 const routes = require('./routes');
