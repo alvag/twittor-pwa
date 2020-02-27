@@ -121,7 +121,7 @@ postBtn.on( 'click', function() {
 		return;
 	}
 
-	fetch( 'http://localhost:3000/api/', {
+	fetch( '/api', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -141,7 +141,7 @@ postBtn.on( 'click', function() {
 // Obtener mensajes del servidor
 
 function getMessages() {
-	fetch( 'http://localhost:3000/api/' )
+	fetch( '/api' )
 	.then( res => res.json() )
 	.then( msgs => {
 		console.log( msgs );

@@ -20,7 +20,7 @@ function postMessage() {
 		docs.rows.forEach( row => {
 			const doc = row.doc;
 
-			const fetchProm = fetch( 'http://localhost:3000/api/', {
+			const fetchProm = fetch( '/api', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
