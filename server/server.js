@@ -6,6 +6,7 @@ const path = require('path');
 const app = express();
 
 const publicPath = path.resolve(__dirname, '../public');
+console.log(publicPath);
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json()); // support json encoded bodies
