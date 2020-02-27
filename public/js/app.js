@@ -121,6 +121,19 @@ postBtn.on( 'click', function() {
 		return;
 	}
 
+	fetch( 'http://localhost:3000/api/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify( { message: mensaje, user: usuario } )
+	} )
+	.then(res => res.json())
+	.then(res => {
+		console.log(res);
+	})
+	.catch(err => console.log(err));
+
 	crearMensajeHTML( mensaje, usuario );
 
 } );
@@ -133,8 +146,32 @@ function getMessages() {
 	.then( msgs => {
 		console.log( msgs );
 
-		msgs.forEach(msg => crearMensajeHTML(msg. message, msg.user));
+		msgs.forEach( msg => crearMensajeHTML( msg.message, msg.user ) );
 	} );
 }
 
 getMessages();
+
+
+// detectar conexión a internet
+
+function isOnline() {
+	if (navigator.onLine) {
+		mdtoast('Online', {
+			interaction: true,
+			interactionTimeout: 1000,
+			actionText: 'OK'
+		});
+	} else {
+		mdtoast('Offline', {
+			interaction: true,
+			actionText: 'OK',
+			type: 'warning'
+		});
+	}
+}
+
+window.addEventListener('online', isOnline);
+window.addEventListener('offline', isOnline);
+
+isOnline();

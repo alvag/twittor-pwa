@@ -1,6 +1,8 @@
-importScripts('js/sw-utils.js');
+importScripts( 'https://cdn.jsdelivr.net/npm/pouchdb@7.1.1/dist/pouchdb.min.js' );
+importScripts( 'js/sw-db.js' );
+importScripts( 'js/sw-utils.js' );
 
-const STATIC_CACHE = 'static-v3';
+const STATIC_CACHE = 'static-v1';
 const DYNAMIC_CACHE = 'dynamic-v2';
 const INMUTABLE_CACHE = 'inmutable-v1';
 
@@ -23,7 +25,10 @@ const APP_SHELL_INMUTABLE = [
 	'https://fonts.googleapis.com/css?family=Lato:400,300',
 	'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
 	'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.css',
-	'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'
+	'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js',
+	'https://cdn.jsdelivr.net/npm/pouchdb@7.1.1/dist/pouchdb.min.js',
+	'libs/mdtoast/mdtoast.min.css',
+	'libs/mdtoast/mdtoast.min.js',
 ];
 
 self.addEventListener( 'install', e => {
@@ -52,8 +57,8 @@ self.addEventListener( 'activate', e => {
 self.addEventListener( 'fetch', e => {
 	let res;
 
-	if (e.request.url.includes('/api')) {
-		res = apiMsgsManager(DYNAMIC_CACHE, e.request);
+	if ( e.request.url.includes( '/api' ) ) {
+		res = apiMsgsManager( DYNAMIC_CACHE, e.request );
 	} else {
 		res = caches.match( e.request ).then( res => {
 			if ( res ) {
@@ -68,4 +73,15 @@ self.addEventListener( 'fetch', e => {
 	}
 
 	e.respondWith( res );
+} );
+
+self.addEventListener( 'sync', e => {
+	console.log('Sync manager');
+
+	if ( e.tag === 'new-message' ) {
+
+		const res = postMessage();
+
+		e.waitUntil( res );
+	}
 } );
