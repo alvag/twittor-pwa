@@ -17,6 +17,9 @@ var modalAvatar = $( '#modal-avatar' );
 var avatarBtns = $( '.seleccion-avatar' );
 var txtMensaje = $( '#txtMensaje' );
 
+var btnActivadas    = $('.btn-noti-activadas');
+var btnDesactivadas = $('.btn-noti-desactivadas');
+
 // El usuario, contiene el ID del héroe seleccionado
 var usuario;
 
@@ -128,11 +131,11 @@ postBtn.on( 'click', function() {
 		},
 		body: JSON.stringify( { message: mensaje, user: usuario } )
 	} )
-	.then(res => res.json())
-	.then(res => {
-		console.log(res);
-	})
-	.catch(err => console.log(err));
+	.then( res => res.json() )
+	.then( res => {
+		console.log( res );
+	} )
+	.catch( err => console.log( err ) );
 
 	crearMensajeHTML( mensaje, usuario );
 
@@ -156,22 +159,70 @@ getMessages();
 // detectar conexión a internet
 
 function isOnline() {
-	if (navigator.onLine) {
-		mdtoast('Online', {
+	if ( navigator.onLine ) {
+		mdtoast( 'Online', {
 			interaction: true,
 			interactionTimeout: 1000,
 			actionText: 'OK'
-		});
+		} );
 	} else {
-		mdtoast('Offline', {
+		mdtoast( 'Offline', {
 			interaction: true,
 			actionText: 'OK',
 			type: 'warning'
-		});
+		} );
 	}
 }
 
-window.addEventListener('online', isOnline);
-window.addEventListener('offline', isOnline);
+window.addEventListener( 'online', isOnline );
+window.addEventListener( 'offline', isOnline );
 
 isOnline();
+
+
+// Notificaciones
+
+function checkSubscription( active ) {
+	if ( active ) {
+		btnActivadas.removeClass('oculto');
+		btnDesactivadas.addClass('oculto');
+	} else {
+		btnActivadas.addClass('oculto');
+		btnDesactivadas.removeClass('oculto');
+	}
+}
+
+checkSubscription();
+
+function sendNotification() {
+	const notificationOpts = {
+		body: 'Este es el cuerpo de la notificacion',
+		icon: 'img/icons/icon-72x72.png'
+	};
+
+	const n = new Notification( 'Hola Mundo!', notificationOpts );
+
+	n.onclick = () => {
+		console.log( 'Click!' );
+	};
+}
+
+function requestNotification() {
+	if ( window.Notification ) {
+
+		if ( Notification.permission === 'granted' ) {
+			sendNotification();
+		} else if ( Notification.permission !== 'denied' || Notification.permission === 'default' ) {
+			Notification.requestPermission( function( permission ) {
+				console.log( permission );
+				if ( permission === 'granted' ) {
+					sendNotification();
+				}
+			} );
+		}
+
+
+	}
+}
+
+// requestNotification();
