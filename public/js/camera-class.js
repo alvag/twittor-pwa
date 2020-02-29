@@ -5,14 +5,19 @@ class Camera {
 	}
 
 	openCamera() {
-		navigator.mediaDevices.getUserMedia( {
-			audio: false,
-			video: { width: 300, height: 300 }
-		} ).then( stream => {
-			alert( 'stream' );
-			this.videoNode.srcObject = stream;
-			this.stream = stream;
-		} ).catch( e => alert( e ) );
+
+		navigator.mediaDevices.enumerateDevices().then(devices => {
+			alert(devices);
+		}).catch(e => alert(e));
+
+		// navigator.mediaDevices.getUserMedia( {
+		// 	audio: false,
+		// 	video: { width: 300, height: 300 }
+		// } ).then( stream => {
+		// 	alert( 'stream' );
+		// 	this.videoNode.srcObject = stream;
+		// 	this.stream = stream;
+		// } ).catch( e => alert( e ) );
 	}
 
 	closeCamera() {
