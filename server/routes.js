@@ -1,6 +1,7 @@
 // Routes.js - Módulo de rutas
-var express = require( 'express' );
-var router = express.Router();
+const express = require( 'express' );
+const router = express.Router();
+const push = require( './push' );
 
 const msgs = [
 	{
@@ -34,13 +35,42 @@ router.post( '/', function( req, res ) {
 
 	msgs.push( message );
 
-	console.log(msgs);
+	console.log( msgs );
 
 	res.json( {
 		ok: true,
-      message
+		message
 
 	} );
+} );
+
+
+// Almacenar la suscripcion
+router.post( '/subscribe', ( req, res ) => {
+	const sub = req.body;
+
+	push.addSubscription( sub );
+	res.json( 'subscribe' );
+} );
+
+// Obtener key publico
+router.get( '/key', ( req, res ) => {
+	const key = push.getKey();
+	res.send( key );
+} );
+
+// OEnvia notificación push
+router.post( '/push', ( req, res ) => {
+
+	const post = {
+		title: req.body.title,
+		body: req.body.body,
+		user: req.body.user,
+	};
+
+	push.sendPush(post);
+
+	res.json( post );
 } );
 
 

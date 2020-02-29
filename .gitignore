@@ -10,3 +10,6 @@ node_modules/
 *.iml
 *.pem
 *.zip
+
+server/vapid.json
+server/subs-db.json

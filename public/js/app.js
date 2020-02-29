@@ -1,5 +1,13 @@
+var swReg;
+
 if ( navigator.serviceWorker ) {
-	navigator.serviceWorker.register( '/sw.js' );
+	window.addEventListener( 'load', function() {
+		navigator.serviceWorker.register( '/sw.js' )
+		.then( function( reg ) {
+			swReg = reg;
+			swReg.pushManager.getSubscription().then( checkSubscription );
+		} );
+	} );
 }
 
 // Referencias de jQuery
@@ -16,6 +24,9 @@ var modal = $( '#modal' );
 var modalAvatar = $( '#modal-avatar' );
 var avatarBtns = $( '.seleccion-avatar' );
 var txtMensaje = $( '#txtMensaje' );
+
+var btnActivadas = $( '.btn-noti-activadas' );
+var btnDesactivadas = $( '.btn-noti-desactivadas' );
 
 // El usuario, contiene el ID del héroe seleccionado
 var usuario;
@@ -128,11 +139,11 @@ postBtn.on( 'click', function() {
 		},
 		body: JSON.stringify( { message: mensaje, user: usuario } )
 	} )
-	.then(res => res.json())
-	.then(res => {
-		console.log(res);
-	})
-	.catch(err => console.log(err));
+	.then( res => res.json() )
+	.then( res => {
+		console.log( res );
+	} )
+	.catch( err => console.log( err ) );
 
 	crearMensajeHTML( mensaje, usuario );
 
@@ -156,22 +167,116 @@ getMessages();
 // detectar conexión a internet
 
 function isOnline() {
-	if (navigator.onLine) {
-		mdtoast('Online', {
+	if ( navigator.onLine ) {
+		mdtoast( 'Online', {
 			interaction: true,
 			interactionTimeout: 1000,
 			actionText: 'OK'
-		});
+		} );
 	} else {
-		mdtoast('Offline', {
+		mdtoast( 'Offline', {
 			interaction: true,
 			actionText: 'OK',
 			type: 'warning'
-		});
+		} );
 	}
 }
 
-window.addEventListener('online', isOnline);
-window.addEventListener('offline', isOnline);
+window.addEventListener( 'online', isOnline );
+window.addEventListener( 'offline', isOnline );
 
 isOnline();
+
+
+// Notificaciones
+
+function checkSubscription( active ) {
+	if ( active ) {
+		btnActivadas.removeClass( 'oculto' );
+		btnDesactivadas.addClass( 'oculto' );
+	} else {
+		btnActivadas.addClass( 'oculto' );
+		btnDesactivadas.removeClass( 'oculto' );
+	}
+}
+
+// checkSubscription();
+
+function sendNotification() {
+	const notificationOpts = {
+		body: 'Este es el cuerpo de la notificacion',
+		icon: 'img/icons/icon-72x72.png'
+	};
+
+	const n = new Notification( 'Hola Mundo!', notificationOpts );
+
+	n.onclick = () => {
+		console.log( 'Click!' );
+	};
+}
+
+function requestNotification() {
+	if ( window.Notification ) {
+
+		if ( Notification.permission === 'granted' ) {
+			sendNotification();
+		} else if ( Notification.permission !== 'denied' || Notification.permission === 'default' ) {
+			Notification.requestPermission( function( permission ) {
+				console.log( permission );
+				if ( permission === 'granted' ) {
+					sendNotification();
+				}
+			} );
+		}
+
+
+	}
+}
+
+// requestNotification();
+
+// get key
+function getPublicKey() {
+	return fetch( 'api/key' )
+	.then( res => res.arrayBuffer() )
+	.then( key => new Uint8Array( key ) );
+}
+
+// getPublicKey().then( console.log );
+
+btnDesactivadas.on( 'click', function() {
+	if ( swReg ) {
+		getPublicKey().then( key => {
+			swReg.pushManager.subscribe( {
+				userVisibleOnly: true,
+				applicationServerKey: key
+			} ).then( res => res.toJSON() )
+			.then( sub => {
+				// console.log(sub);
+
+				fetch( 'api/subscribe', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify( sub )
+				} )
+				.then( checkSubscription )
+				.catch( cancelSubscription );
+
+				// checkSubscription( sub );
+			} );
+		} );
+	}
+} );
+
+function cancelSubscription() {
+	swReg.pushManager.getSubscription()
+	.then( subs => {
+		subs.unsubscribe().then( () => checkSubscription( false ) );
+	} );
+}
+
+btnActivadas.on( 'click', function() {
+	cancelSubscription();
+} );
