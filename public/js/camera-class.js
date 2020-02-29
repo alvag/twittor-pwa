@@ -7,7 +7,8 @@ class Camera {
 	openCamera() {
 
 		navigator.mediaDevices.enumerateDevices().then(devices => {
-			alert(devices);
+			alert(JSON.stringify(devices));
+			console.log(devices);
 		}).catch(e => alert(e));
 
 		// navigator.mediaDevices.getUserMedia( {
