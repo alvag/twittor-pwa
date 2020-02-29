@@ -9,10 +9,12 @@ class Camera {
 			audio: false,
 			video: { width: 300, height: 300 }
 		} ).then( stream => {
-			alert( 'stream' );
 			this.videoNode.srcObject = stream;
 			this.stream = stream;
-		} ).catch( e => alert( e ) );
+		} ).catch( e => {
+			console.log(e);
+			alert('Error al acceder a la cámara del dispositivo.');
+		} );
 	}
 
 	closeCamera() {
