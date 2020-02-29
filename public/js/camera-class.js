@@ -5,20 +5,24 @@ class Camera {
 	}
 
 	openCamera() {
-		navigator.mediaDevices.getUserMedia( {
-			audio: false,
-			video: { width: 300, height: 300 }
-		} ).then( stream => {
-			alert('stream');
-			this.videoNode.srcObject = stream;
-			this.stream = stream;
-		} ).catch(e => alert(e));
+		if (navigator.mediaDevices) {
+			navigator.mediaDevices.getUserMedia( {
+				audio: false,
+				video: { width: 300, height: 300 }
+			} ).then( stream => {
+				alert('stream');
+				this.videoNode.srcObject = stream;
+				this.stream = stream;
+			} ).catch(e => alert(e));
+		} else {
+			alert('Tu navegador no soporta esta funcionalidad');
+		}
 	}
 
 	closeCamera() {
 		this.videoNode.pause();
 		if ( this.stream ) {
-			this.stream.getTracks()[ 0 ].stop();
+			this.stream.getTracks().forEach(track => track.stop());
 		}
 	}
 
