@@ -57,6 +57,10 @@ var foto = null;
 // El usuario, contiene el ID del héroe seleccionado
 var usuario;
 
+// init Camera class
+
+const camera = new Camera($('#player')[0]);
+
 
 // ===== Codigo de la aplicación
 
@@ -200,6 +204,7 @@ cancelarBtn.on( 'click', function() {
 			opacity: 0
 		}, 200, function() {
 			modal.addClass( 'oculto' );
+			modalMapa.addClass('oculto');
 			txtMensaje.val( '' );
 		} );
 	}
@@ -410,3 +415,19 @@ btnLocation.on( 'click', () => {
 	}
 
 } );
+
+// Boton de la camara
+// usamos la funcion de fleca para prevenir
+// que jQuery me cambie el valor del this
+btnPhoto.on('click', () => {
+	contenedorCamara.removeClass('oculto');
+	camera.openCamera();
+});
+
+
+// Boton para tomar la foto
+btnTomarFoto.on('click', () => {
+
+	console.log('Botón tomar foto');
+
+});
