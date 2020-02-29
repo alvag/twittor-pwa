@@ -89,8 +89,7 @@ self.addEventListener( 'sync', e => {
 // escuchar notificaciones push
 
 self.addEventListener( 'push', e => {
-	const data = JSON.parse(e.data.text());
-	console.log(data);
+	const data = JSON.parse( e.data.text() );
 
 	const title = data.title;
 	const options = {
@@ -98,10 +97,58 @@ self.addEventListener( 'push', e => {
 		icon: 'img/icons/icon-72x72.png',
 		badge: 'img/favicon.ico',
 		image: 'https://contenidos.enter.co/custom/uploads/2019/02/Avengers-3.jpg',
-		vibrate: [125,75,125,275,200,275,125,75,125,275,200,600,200,600],
-		openUrl: '/'
+		vibrate: [125, 75, 125, 275, 200, 275, 125, 75, 125, 275, 200, 600, 200, 600],
+		openUrl: '/',
+		data: {
+			// url: 'https://google.com',
+			url: '/',
+			id: data.user
+		},
+		actions: [
+			{
+				action: 'thor-action',
+				title: 'Thor',
+				icon: 'img/avatars/thor.jpg'
+			},
+			{
+				action: 'ironman-action',
+				title: 'Ironman',
+				icon: 'img/avatars/ironman.jpg'
+			}
+		]
 	};
 
-	e.waitUntil(self.registration.showNotification(title, options));
+	e.waitUntil( self.registration.showNotification( title, options ) );
+
+} );
+
+// cuando se cierra la notificación
+self.addEventListener( 'notificationclose', e => {
+	console.log( 'notificationclose', e );
+} );
+
+self.addEventListener( 'notificationclick', e => {
+	console.log( 'notificationclick', e );
+
+	const { notification, action } = e;
+
+	console.log( notification );
+	console.log( action );
+
+	const res = clients.matchAll().then( tabs => {
+		let client = tabs.find( c => {
+			return c.visibilityState === 'visible';
+		} );
+
+		if ( client !== undefined ) {
+			client.navigate( notification.data.url );
+			client.focus();
+		} else {
+			clients.openWindow( notification.data.url );
+		}
+		return notification.close();
+	} );
+
+	e.waitUntil(res);
 
 } );
