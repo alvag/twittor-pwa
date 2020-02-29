@@ -5,15 +5,9 @@ class Camera {
 	}
 
 	openCamera() {
-
-		// navigator.mediaDevices.enumerateDevices().then(devices => {
-		// 	alert(JSON.stringify(devices));
-		// 	console.log(devices);
-		// }).catch(e => alert(e));
-
 		navigator.mediaDevices.getUserMedia( {
 			audio: false,
-			video: { width: 300, height: 300, deviceId: '22ec0313d98cfab' }
+			video: { width: 300, height: 300 }
 		} ).then( stream => {
 			alert( 'stream' );
 			this.videoNode.srcObject = stream;
