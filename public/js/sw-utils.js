@@ -17,7 +17,9 @@ function updateStaticCache( cacheName, req, APP_SHELL_INMUTABLE ) {
 
 function apiMsgsManager( cacheName, req ) {
 
-	if ( req.clone().method === 'POST' ) {
+	if ( ( req.url.indexOf( '/api/key' ) >= 0 ) || req.url.indexOf( '/api/subscribe' ) >= 0 ) {
+		return fetch( req );
+	} else if ( req.clone().method === 'POST' ) {
 
 		if ( self.registration.sync ) {
 			return req.clone().text().then( body => {

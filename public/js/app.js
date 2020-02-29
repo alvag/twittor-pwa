@@ -1,5 +1,13 @@
+var swReg;
+
 if ( navigator.serviceWorker ) {
-	navigator.serviceWorker.register( '/sw.js' );
+	window.addEventListener( 'load', function() {
+		navigator.serviceWorker.register( '/sw.js' )
+		.then( function( reg ) {
+			swReg = reg;
+			swReg.pushManager.getSubscription().then( checkSubscription );
+		} );
+	} );
 }
 
 // Referencias de jQuery
@@ -17,8 +25,8 @@ var modalAvatar = $( '#modal-avatar' );
 var avatarBtns = $( '.seleccion-avatar' );
 var txtMensaje = $( '#txtMensaje' );
 
-var btnActivadas    = $('.btn-noti-activadas');
-var btnDesactivadas = $('.btn-noti-desactivadas');
+var btnActivadas = $( '.btn-noti-activadas' );
+var btnDesactivadas = $( '.btn-noti-desactivadas' );
 
 // El usuario, contiene el ID del héroe seleccionado
 var usuario;
@@ -184,15 +192,15 @@ isOnline();
 
 function checkSubscription( active ) {
 	if ( active ) {
-		btnActivadas.removeClass('oculto');
-		btnDesactivadas.addClass('oculto');
+		btnActivadas.removeClass( 'oculto' );
+		btnDesactivadas.addClass( 'oculto' );
 	} else {
-		btnActivadas.addClass('oculto');
-		btnDesactivadas.removeClass('oculto');
+		btnActivadas.addClass( 'oculto' );
+		btnDesactivadas.removeClass( 'oculto' );
 	}
 }
 
-checkSubscription();
+// checkSubscription();
 
 function sendNotification() {
 	const notificationOpts = {
@@ -226,3 +234,49 @@ function requestNotification() {
 }
 
 // requestNotification();
+
+// get key
+function getPublicKey() {
+	return fetch( 'api/key' )
+	.then( res => res.arrayBuffer() )
+	.then( key => new Uint8Array( key ) );
+}
+
+// getPublicKey().then( console.log );
+
+btnDesactivadas.on( 'click', function() {
+	if ( swReg ) {
+		getPublicKey().then( key => {
+			swReg.pushManager.subscribe( {
+				userVisibleOnly: true,
+				applicationServerKey: key
+			} ).then( res => res.toJSON() )
+			.then( sub => {
+				// console.log(sub);
+
+				fetch( 'api/subscribe', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify( sub )
+				} )
+				.then( checkSubscription )
+				.catch( cancelSubscription );
+
+				// checkSubscription( sub );
+			} );
+		} );
+	}
+} );
+
+function cancelSubscription() {
+	swReg.pushManager.getSubscription()
+	.then( subs => {
+		subs.unsubscribe().then( () => checkSubscription( false ) );
+	} );
+}
+
+btnActivadas.on( 'click', function() {
+	cancelSubscription();
+} );

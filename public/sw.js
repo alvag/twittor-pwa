@@ -76,7 +76,7 @@ self.addEventListener( 'fetch', e => {
 } );
 
 self.addEventListener( 'sync', e => {
-	console.log('Sync manager');
+	console.log( 'Sync manager' );
 
 	if ( e.tag === 'new-message' ) {
 
@@ -84,4 +84,24 @@ self.addEventListener( 'sync', e => {
 
 		e.waitUntil( res );
 	}
+} );
+
+// escuchar notificaciones push
+
+self.addEventListener( 'push', e => {
+	const data = JSON.parse(e.data.text());
+	console.log(data);
+
+	const title = data.title;
+	const options = {
+		body: data.body,
+		icon: 'img/icons/icon-72x72.png',
+		badge: 'img/favicon.ico',
+		image: 'https://contenidos.enter.co/custom/uploads/2019/02/Avengers-3.jpg',
+		vibrate: [125,75,125,275,200,275,125,75,125,275,200,600,200,600],
+		openUrl: '/'
+	};
+
+	e.waitUntil(self.registration.showNotification(title, options));
+
 } );
