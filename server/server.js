@@ -7,8 +7,8 @@ const app = express();
 const publicPath = path.resolve(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+app.use(bodyParser.json({limit: '50mb', extended: true})); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' })); // support encoded bodies
 
 // Enable CORS
 app.use(function(req, res, next) {

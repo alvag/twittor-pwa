@@ -19,18 +19,19 @@ router.get( '/', function( req, res ) {
 
 router.post( '/', function( req, res ) {
 
-	console.log(req.body);
+	// console.log(req.body);
 
 	const message = {
 		message: req.body.message,
 		user: req.body.user,
 		lat: req.body.lat,
 		lng: req.body.lng,
+		foto: req.body.foto
 	};
 
 	msgs.push( message );
 
-	console.log( msgs );
+	// console.log( msgs );
 
 	res.json( {
 		ok: true,

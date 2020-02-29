@@ -64,7 +64,7 @@ const camera = new Camera($('#player')[0]);
 
 // ===== Codigo de la aplicación
 
-function crearMensajeHTML( mensaje, personaje, lat, lng ) {
+function crearMensajeHTML( mensaje, personaje, lat, lng, foto ) {
 
 	// console.log(mensaje, personaje, lat, lng);
 
@@ -83,12 +83,12 @@ function crearMensajeHTML( mensaje, personaje, lat, lng ) {
                 ${mensaje}
                 `;
 
-	// if ( foto ) {
-	// 	content += `
-    //             <br>
-    //             <img class="foto-mensaje" src="${foto}">
-    //     `;
-	// }
+	if ( foto ) {
+		content += `
+                <br>
+                <img class="foto-mensaje" src="${foto}">
+        `;
+	}
 
 	content += `</div>        
                 <div class="arrow"></div>
@@ -222,7 +222,7 @@ postBtn.on( 'click', function() {
 	const data = {
 		message: mensaje,
 		user: usuario,
-		lat, lng
+		lat, lng, foto
 	};
 
 	fetch( '/api', {
@@ -241,7 +241,7 @@ postBtn.on( 'click', function() {
 	// camera.apagar();
 	// contenedorCamara.addClass('oculto');
 
-	crearMensajeHTML( mensaje, usuario, lat, lng );
+	crearMensajeHTML( mensaje, usuario, lat, lng, foto );
 
 	foto = null;
 
@@ -429,5 +429,11 @@ btnPhoto.on('click', () => {
 btnTomarFoto.on('click', () => {
 
 	console.log('Botón tomar foto');
+
+	foto = camera.takePhoto();
+
+	console.log(foto);
+
+	camera.closeCamera();
 
 });
