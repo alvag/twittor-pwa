@@ -59,7 +59,7 @@ var usuario;
 
 // init Camera class
 
-const camera = new Camera($('#player')[0]);
+const camera = new Camera( $( '#player' )[ 0 ] );
 
 
 // ===== Codigo de la aplicación
@@ -70,6 +70,8 @@ function crearMensajeHTML( mensaje, personaje, lat, lng, foto ) {
 
 	var content = `
     <li class="animated fadeIn fast"
+        data-user="${personaje}"
+        data-mensaje="${mensaje}"
         data-tipo="mensaje">
 
 
@@ -204,7 +206,7 @@ cancelarBtn.on( 'click', function() {
 			opacity: 0
 		}, 200, function() {
 			modal.addClass( 'oculto' );
-			modalMapa.addClass('oculto');
+			modalMapa.addClass( 'oculto' );
 			txtMensaje.val( '' );
 		} );
 	}
@@ -255,7 +257,7 @@ function getMessages() {
 	.then( msgs => {
 		console.log( msgs );
 
-		msgs.forEach( msg => crearMensajeHTML( msg.message, msg.user, msg.lat, msg.lng, msg.foto  ) );
+		msgs.forEach( msg => crearMensajeHTML( msg.message, msg.user, msg.lat, msg.lng, msg.foto ) );
 	} );
 }
 
@@ -419,21 +421,54 @@ btnLocation.on( 'click', () => {
 // Boton de la camara
 // usamos la funcion de fleca para prevenir
 // que jQuery me cambie el valor del this
-btnPhoto.on('click', () => {
-	contenedorCamara.removeClass('oculto');
+btnPhoto.on( 'click', () => {
+	contenedorCamara.removeClass( 'oculto' );
 	camera.openCamera();
-});
+} );
 
 
 // Boton para tomar la foto
-btnTomarFoto.on('click', () => {
+btnTomarFoto.on( 'click', () => {
 
-	console.log('Botón tomar foto');
+	console.log( 'Botón tomar foto' );
 
 	foto = camera.takePhoto();
 
-	console.log(foto);
+	console.log( foto );
 
 	camera.closeCamera();
 
-});
+} );
+
+
+// Share API
+
+// if (navigator.share) {
+// 	console.log('soportado');
+// }
+
+timeline.on( 'click', 'li', function() {
+	const tipo = $( this ).data( 'tipo' );
+	const lat = $( this ).data( 'lat' );
+	const lng = $( this ).data( 'lng' );
+	const mensaje = $( this ).data( 'mensaje' );
+	const user = $( this ).data( 'user' );
+
+	console.log({tipo, lat, lng, mensaje, user});
+
+	const opts = {
+		title: user,
+		text: mensaje,
+	};
+
+	if ( tipo === 'mapa' ) {
+		opts.text = 'Mapa';
+		opts.url = `https://www.google.com/maps/@${lat},${lng},15z`;
+	}
+
+	if ( navigator.share ) {
+		navigator.share( opts )
+		.then( () => console.log( 'Successful share' ) )
+		.catch( ( error ) => console.log( 'Error sharing', error ) );
+	}
+} );
