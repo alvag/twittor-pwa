@@ -8,16 +8,6 @@ const msgs = [
 		_id: 1,
 		user: 'spiderman',
 		message: 'Hola Mundo'
-	},
-	{
-		_id: 2,
-		user: 'ironman',
-		message: 'Hola Mundo'
-	},
-	{
-		_id: 3,
-		user: 'wolverine',
-		message: 'Hola Mundo'
 	}
 ];
 
@@ -28,9 +18,14 @@ router.get( '/', function( req, res ) {
 } );
 
 router.post( '/', function( req, res ) {
+
+	console.log(req.body);
+
 	const message = {
 		message: req.body.message,
-		user: req.body.user
+		user: req.body.user,
+		lat: req.body.lat,
+		lng: req.body.lng,
 	};
 
 	msgs.push( message );
